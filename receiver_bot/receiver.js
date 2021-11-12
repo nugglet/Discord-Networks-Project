@@ -1,24 +1,19 @@
-const { Client, Intents, VoiceChannel } = require('discord.js');
-import {
-    joinVoiceChannel,
-    createAudioPlayer,
-    createAudioResource,
-    entersState,
-    StreamType,
-    AudioPlayerStatus,
-    VoiceConnectionStatus,
-} from '@discordjs/voice';
-const dotenv = require('dotenv')
-import * as utils from 'utils.js'
+import Discord, { Interaction, CommandInteraction, GuildMember } from 'discord.js';
+import pkg from 'discord.js';
+const { Snowflake } = pkg
+import { joinVoiceChannel, getVoiceConnection } from '@discordjs/voice';
+import dotenv from 'dotenv'
+import * as utils from './utils.js'
 
 dotenv.config()
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
 
 // ============== GLOBAL VARIABLES ==============
 
 const clientId = process.env.RECV_CLIENT_ID
 const guildId = process.env.GUILD_ID
 const token = process.env.RECV_BOT_TOKEN
+const channelId = process.env.CHANNEL_ID
 
 // ===============================================
 
@@ -29,24 +24,64 @@ client.on('interactionCreate', async interaction => {
 
     const { commandName } = interaction;
 
-    if (commandName === 'ping') {
-        await interaction.reply('Pong!');
-    } else if (commandName === 'server') {
-        await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
-    } else if (commandName === 'user') {
-        await interaction.reply(`Your tag: ${interaction.user.tag}\nYour id: ${interaction.user.id}`);
-    } else if (commandName == 'join') {
-        await interaction.reply('tbc');
+    if (commandName == 'join') {
         // https://github.com/discordjs/voice/tree/main/examples/basic
-        // const channel = interaction.member?.voice.channel;
+        const channel = interaction.member?.voice.channel;
 
-        // if (channel) {
-        //     try {
-        //         const connection = await connectToChannel(channel);
-        //     } catch (error) {
-        //         console.error(error);
-        //     }
-        // }
+        if (channel) {
+            try {
+
+                const connection = joinVoiceChannel({
+                    channelId: channel.id,
+                    guildId: channel.guildId,
+                    adapterCreator: channel.guild.voiceAdapterCreator,
+                    selfDeaf: false
+                })
+
+                await interaction.reply({ content: `Joining ${channel}`, ephemeral: false });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    } else if (commandName == 'record') {
+        // starts recording
+        const recordable = new Set()
+
+        const channel = interaction.member?.voice.channel;
+        const connection = getVoiceConnection(channel.guild.id);
+
+        for (const [key, value] of channel.members.entries()) {
+            recordable.add(key)
+        }
+
+        if (connection) {
+            // const userId = Snowflake(interaction.options.get('speaker').value)
+            // recordable.add(userId);
+
+            const receiver = connection.receiver;
+
+            recordable.forEach(function (id) {
+                // console.log(id)
+                utils.createListeningStream(receiver, id, client.users.cache.get(id));
+            })
+
+            await interaction.reply({ ephemeral: false, content: 'Listening!' });
+        } else {
+            await interaction.reply({ ephemeral: false, content: 'Join a voice channel and then try that again!' });
+        }
+
+
+
+    } else if (commandName == 'leave') {
+        // leaves channel and outputs recording + stats in bot channel
+        const channel = interaction.member?.voice.channel;
+        const connection = getVoiceConnection(channel.guild.id);
+        try {
+            connection.destroy()
+            await interaction.reply({ content: `Leaving ${channel}`, ephemeral: false });
+        } catch (error) {
+            await interaction.reply({ content: 'Not connected to channel.', ephemeral: false });
+        }
     }
 });
 

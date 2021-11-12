@@ -14,10 +14,9 @@ const token = process.env.RECV_BOT_TOKEN
 // ===============================================
 
 const commands = [
-    new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
-    new SlashCommandBuilder().setName('server').setDescription('Replies with server info!'),
-    new SlashCommandBuilder().setName('user').setDescription('Replies with user info!'),
-    new SlashCommandBuilder().setName('join').setDescription('Joins the active voice channel and starts recording.')
+    new SlashCommandBuilder().setName('join').setDescription('Joins the active voice channel and starts recording.'),
+    new SlashCommandBuilder().setName('record').setDescription('Records voice activity.'),
+    new SlashCommandBuilder().setName('leave').setDescription('Leaves channel and reports call stats')
 ]
     .map(command => command.toJSON());
 
