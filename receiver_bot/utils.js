@@ -8,9 +8,11 @@ import {
     AudioPlayerStatus,
     VoiceConnectionStatus,
     EndBehaviorType,
-    VoiceReceiver
+    VoiceReceiver,
+    generateDependencyReport
 } from '@discordjs/voice';
-import { createWriteStream } from 'node:fs';
+import pkg from '@discordjs/opus';
+const { OpusEncoder } = pkg;
 import prism from 'prism-media';
 import { FileWriter } from 'wav';
 import { pipeline, Transform } from 'node:stream';
@@ -58,20 +60,20 @@ export async function createListeningStream(receiver, userId, user) {
 
     const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
     const encoder = new prism.opus.Encoder(16000, 1)
+    // const encoder = new OpusEncoder(16000, 1)
 
-    console.log('entering function')
     const opusStream = receiver.subscribe(userId, {
         end: {
-            duration: 1000,
+            behavior: EndBehaviorType.Manual
         }
     })
         .pipe(new OpusDecodingStream({}, encoder))
         .pipe(new FileWriter(filename, {
             channels: 1,
-            sampleRate: 16000
+            sampleRate: 16000,
+            autoDestroy: true
         }));
 
-    console.log('subbed')
-
     console.log(`👂 Started recording ${filename}`);
+    console.log(generateDependencyReport())
 }
