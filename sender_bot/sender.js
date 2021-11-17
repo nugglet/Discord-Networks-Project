@@ -5,7 +5,7 @@ import * as utils from './utils.js'
 
 dotenv.config()
 
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGES,Discord.Intents.FLAGS.GUILD_VOICE_STATES] });
 
 const clientId = process.env.SENDER_BOT_CLIENT_ID
 const guildId = process.env.GUILD_ID
@@ -45,9 +45,12 @@ client.on('interactionCreate', async interaction => {
         const connection = getVoiceConnection(channel.guild.id);
         // const id = interaction.member.id;
         if (connection) {
-            console.log("Attempt to play");
+           
+            connection.playOpusPacket('./audio.mp3',{volume: 0.9,});
+            
+		    console.log("Played sound");
 
-            connection.playOpusPacket("C:\Users\joshu\senderbot\audio.mp3")
+
             await interaction.reply({ ephemeral: false, content: 'Playing!' });
         } else {
             await interaction.reply({ ephemeral: false, content: 'Join a voice channel and then try that again!' });
