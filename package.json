@@ -1,0 +1,23 @@
+{
+  "name": "sender_bot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "sender.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node sender.js"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.8.2",
+    "@discordjs/opus": "^0.7.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "@discordjs/voice": "^0.7.5",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "distube": "^3.0.2",
+    "dotenv": "^10.0.0",
+    "ffmpeg-static": "^4.4.0",
+    "node": "^17.1.0"
+  }
+}
