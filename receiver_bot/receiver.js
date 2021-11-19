@@ -1,12 +1,10 @@
-import Discord, { Interaction, CommandInteraction, GuildMember} from 'discord.js';
-import { joinVoiceChannel, getVoiceConnection, EndBehaviorType } from '@discordjs/voice';
+import Discord from 'discord.js';
+import { joinVoiceChannel, getVoiceConnection } from '@discordjs/voice';
 import dotenv from 'dotenv'
 import * as utils from './utils.js'
 import pkg from '@discordjs/opus'
 const { OpusEncoder } = pkg
-import { pipeline, Transform } from 'node:stream';
-import { FileWriter } from 'wav';
-
+import { Transform } from 'node:stream';
 
 dotenv.config()
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_VOICE_STATES] });
@@ -20,42 +18,24 @@ const channelId = process.env.CHANNEL_ID
 
 // ===============================================
 
-class OpusDecodingStream extends Transform {
-    encoder
-
-    constructor(options, encoder) {
-        super(options)
-        this.encoder = encoder
-    }
-
-    _transform(data, encoding, callback) {
-        this.push(this.encoder.decode(data))
-        callback()
-    }
-}
-
-function findUsername(userId){
-    const User = client.users.cache.get(userId);
-    if (User) { // Checking if the user exists.
-       return User.tag;
-    } else {
-        message.channel.send("User not found.") // The user doesn't exists or the bot couldn't find him.
-    };
-}
 // ============== DEFINE COMMAND BEHAVIOUR ==================================
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
     const { commandName } = interaction;
+    const channel = interaction.member.voice.channel;
 
-    if (commandName == 'join') {
+    if (commandName == 'setbitrate') {
+        var new_rate = interaction.options.getInteger('bitrate')
+        channel.setBitrate(new_rate)
+        await interaction.reply({ content: `Set new bitrate of ${channel} to ${new_rate}`, ephemeral: false });
+
+    } else if (commandName == 'join') {
         // https://github.com/discordjs/voice/tree/main/examples/basic
-        const channel = interaction.member?.voice.channel;
 
         if (channel) {
             try {
-
                 const connection = joinVoiceChannel({
                     channelId: channel.id,
                     guildId: channel.guildId,
@@ -71,8 +51,6 @@ client.on('interactionCreate', async interaction => {
     } else if (commandName == 'record') {
         // starts recording each member in voice channel
 
-
-        const channel = interaction.member?.voice.channel;
         const connection = getVoiceConnection(channel.guild.id);
         // const id = interaction.member.id;
 
@@ -98,15 +76,15 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ ephemeral: false, content: 'Join a voice channel and then try that again!' });
         }
 
-
     } else if (commandName == 'leave') {
         // leaves channel and outputs recording + stats in bot channel
-        const channel = interaction.member?.voice.channel;
         const connection = getVoiceConnection(channel.guild.id);
+        console.log(connection)
         try {
+            const report = utils.reportCallStats(channel, interaction)
             connection.destroy()
-            recordable.clear()
-            await interaction.reply({ content: `Leaving ${channel}`, ephemeral: false });
+            await interaction.reply({ content: report + `\nLeaving ${channel}` });
+
         } catch (error) {
             await interaction.reply({ content: 'Not connected to channel.', ephemeral: false });
         }

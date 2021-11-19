@@ -92,3 +92,10 @@ export async function createListeningStream(receiver, userId, user) {
 		}
 	})
 }
+
+export function reportCallStats(channel, interaction) {
+
+    var report = `Call Statistics:\nNumber of Members: ${channel.members.size}\nChannel Bitrate: ${channel.bitrate}\nRTC Region: ${channel.rtcRegion}`
+    return report
+
+}
