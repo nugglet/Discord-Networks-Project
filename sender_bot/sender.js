@@ -15,7 +15,7 @@ const clientId = process.env.SENDER_BOT_CLIENT_ID
 const guildId = process.env.GUILD_ID
 const token = process.env.SENDER_BOT_TOKEN
 const channelId = process.env.CHANNEL_ID
-
+const player = createAudioPlayer();
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
@@ -48,31 +48,30 @@ client.on('interactionCreate', async interaction => {
         const connection = getVoiceConnection(channel.guild.id);
         // const id = interaction.member.id;
         if (connection) {
-           
+
             let resource = createAudioResource(createReadStream('./audio.mp3'), {
                 inlineVolume : true
             });
 
-            resource.volume.setVolume(0.2);
-
-            console.log(join('audio.mp3'));
+            resource.volume.setVolume(0.001);
+            resource.encoder.setBitrate(510000);
             
-            const player = createAudioPlayer();
-
             connection.subscribe(player);
-            player.play(resource)
+            player.play(resource);
+            
+            start_logging()
 
             await interaction.reply({ ephemeral: false, content: 'Playing!' });
         } else {
             await interaction.reply({ ephemeral: false, content: 'Join a voice channel and then try that again!' });
         }
-        
 
     } else if (commandName == 'leave') {
         // leaves channel and outputs recording + stats in bot channel
         const channel = interaction.member?.voice.channel;
         const connection = getVoiceConnection(channel.guild.id);
         try {
+            player.stop();
             connection.destroy()
             await interaction.reply({ content: `Leaving ${channel}`, ephemeral: false });
         } catch (error) {
@@ -87,6 +86,19 @@ client.once('ready', () => {
     console.log("Connected as " + client.user.tag)
 
 })
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+async function start_logging() {
+    while (true){
+        if (player.state.status=='playing')
+            console.log(player.state);
+            await sleep(1000)
+    }
+ }
+  
 
 client.on('error', () => {
     console.log('error')
