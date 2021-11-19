@@ -58,39 +58,39 @@ function getDisplayName(userId, user) {
 
 export async function createListeningStream(receiver, userId, user) {
     const opusStream = receiver.subscribe(userId, {
-		end: {
-			behavior: EndBehaviorType.AfterSilence,
-			duration: 100,
-		},
+        end: {
+            behavior: EndBehaviorType.AfterSilence,
+            duration: 10000,
+        },
         autoDestroy: true,
-	});
+    });
 
     console.log(receiver)
 
-	const oggStream = new prism.opus.OggLogicalBitstream({
-		opusHead: new prism.opus.OpusHead({
-			channelCount: 2,
-			sampleRate: 48000,
-		}),
-		pageSizeControl: {
-			maxPackets: 10,
-		},
-	});
+    const oggStream = new prism.opus.OggLogicalBitstream({
+        opusHead: new prism.opus.OpusHead({
+            channelCount: 2,
+            sampleRate: 48000,
+        }),
+        pageSizeControl: {
+            maxPackets: 10,
+        },
+    });
 
-	const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
+    const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
 
-	const out = createWriteStream(filename, {autoClose: true});
+    const out = createWriteStream(filename, { autoClose: true });
 
     console.log(`👂 Started recording ${filename}`);
 
     pipeline(opusStream, oggStream, out, (err) => {
         console.log(err)
-		if (err) {
-			console.warn(`❌ Error recording file ${filename} - ${err.message}`);
-		} else {
-			console.log(`✅ Recorded ${filename}`);
-		}
-	})
+        if (err) {
+            console.warn(`❌ Error recording file ${filename} - ${err.message}`);
+        } else {
+            console.log(`✅ Recorded ${filename}`);
+        }
+    })
 }
 
 export function reportCallStats(channel, interaction) {
@@ -98,4 +98,14 @@ export function reportCallStats(channel, interaction) {
     var report = `Call Statistics:\nNumber of Members: ${channel.members.size}\nChannel Bitrate: ${channel.bitrate}\nRTC Region: ${channel.rtcRegion}`
     return report
 
+}
+
+// Source: https://gist.github.com/lmmfranco/2de1cb9d9a98c3aee492733fff195a3a
+// For Master-Slave interaction
+function getParams(command) {
+    const spcIndex = command.indexOf(" ");
+    if (spcIndex > 0) {
+        return command.slice(spcIndex, command.length);
+    }
+    return "";
 }

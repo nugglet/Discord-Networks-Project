@@ -17,6 +17,8 @@ const token = process.env.RECV_BOT_TOKEN
 const channelId = process.env.CHANNEL_ID
 
 // ===============================================
+// const master = new Discord.Client(); => define master bot, might need to replace the client with master, and/or slave appropriately
+// const slave = new Discord.Client(); => define slave bot
 
 // ============== DEFINE COMMAND BEHAVIOUR ==================================
 
@@ -25,6 +27,7 @@ client.on('interactionCreate', async interaction => {
 
     const { commandName } = interaction;
     const channel = interaction.member.voice.channel;
+    console.log(channel)
 
     if (commandName == 'setbitrate') {
         var new_rate = interaction.options.getInteger('bitrate')
@@ -102,3 +105,20 @@ client.on('error', () => {
 })
 
 client.login(process.env.RECV_BOT_TOKEN)
+
+// For Master-Slave Construct -> use master and slave instead of client
+// master.on('ready', () => {
+//    console.log("Connected Master Bot");
+//
+// })
+
+// slave.on('ready', () => {
+//    console.log("Connected Slave Bot");
+//
+// })
+
+// console.log("Start Master Bot");
+// master.login(MASTER_KEY);
+
+// console.log("Start Slave Bot");
+// slave.login(SLAVE_KEY);
