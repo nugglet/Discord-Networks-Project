@@ -17,6 +17,10 @@ const token = process.env.RECV_BOT_TOKEN
 const channelId = process.env.CHANNEL_ID
 
 // ===============================================
+// const MASTER_KEY = "<insert bot token>";
+// const SLAVE_KEY = "<insert bot token>"; 
+// const master = new Discord.Client(); => define master bot, might need to replace client with master, and/or slave appropriately
+// const slave = new Discord.Client(); => define slave bot
 
 // ============== DEFINE COMMAND BEHAVIOUR ==================================
 
