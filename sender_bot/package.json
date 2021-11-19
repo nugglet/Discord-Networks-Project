@@ -20,6 +20,8 @@
     "ffmpeg-static": "^4.4.0",
     "libsodium": "^0.7.9",
     "libsodium-wrappers": "^0.7.9",
-    "node": "^17.1.0"
+    "node": "^17.1.0",
+    "ytdl": "^1.4.1",
+    "ytdl-core": "^4.9.1"
   }
 }

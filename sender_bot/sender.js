@@ -1,7 +1,11 @@
 import Discord, { Interaction, CommandInteraction, GuildMember } from 'discord.js';
-import { joinVoiceChannel, getVoiceConnection } from '@discordjs/voice';
-import dotenv from 'dotenv'
+import { joinVoiceChannel, getVoiceConnection, VoiceConnection,createAudioResource , createAudioPlayer} from '@discordjs/voice';
+import dotenv from 'dotenv';
+import { createReadStream } from 'node:fs';
+import { join } from 'path/posix';
 import * as utils from './utils.js'
+import ytdl from 'ytdl-core';
+import { createWriteStream } from 'node:fs'
 
 dotenv.config()
 
@@ -11,8 +15,7 @@ const clientId = process.env.SENDER_BOT_CLIENT_ID
 const guildId = process.env.GUILD_ID
 const token = process.env.SENDER_BOT_TOKEN
 const channelId = process.env.CHANNEL_ID
-
-var isReady = true;
+const player = createAudioPlayer();
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
@@ -45,23 +48,30 @@ client.on('interactionCreate', async interaction => {
         const connection = getVoiceConnection(channel.guild.id);
         // const id = interaction.member.id;
         if (connection) {
-           
-            connection.playOpusPacket('./audio.mp3',{volume: 0.9,});
-            
-		    console.log("Played sound");
 
+            let resource = createAudioResource(createReadStream('./audio.mp3'), {
+                inlineVolume : true
+            });
+
+            resource.volume.setVolume(0.001);
+            resource.encoder.setBitrate(510000);
+            
+            connection.subscribe(player);
+            player.play(resource);
+            
+            start_logging()
 
             await interaction.reply({ ephemeral: false, content: 'Playing!' });
         } else {
             await interaction.reply({ ephemeral: false, content: 'Join a voice channel and then try that again!' });
         }
-        
 
     } else if (commandName == 'leave') {
         // leaves channel and outputs recording + stats in bot channel
         const channel = interaction.member?.voice.channel;
         const connection = getVoiceConnection(channel.guild.id);
         try {
+            player.stop();
             connection.destroy()
             await interaction.reply({ content: `Leaving ${channel}`, ephemeral: false });
         } catch (error) {
@@ -76,6 +86,19 @@ client.once('ready', () => {
     console.log("Connected as " + client.user.tag)
 
 })
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+async function start_logging() {
+    while (true){
+        if (player.state.status=='playing')
+            console.log(player.state);
+            await sleep(1000)
+    }
+ }
+  
 
 client.on('error', () => {
     console.log('error')
