@@ -8,7 +8,8 @@ import {
     AudioPlayerStatus,
     VoiceConnectionStatus,
     EndBehaviorType,
-    VoiceReceiver
+    VoiceReceiver,
+    generateDependencyReport
 } from '@discordjs/voice';
 import { createWriteStream } from 'node:fs';
 import pkg from '@discordjs/opus'

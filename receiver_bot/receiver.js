@@ -7,6 +7,7 @@ const { OpusEncoder } = pkg
 import { pipeline, Transform } from 'node:stream';
 import { FileWriter } from 'wav';
 
+
 dotenv.config()
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_VOICE_STATES] });
 
@@ -68,32 +69,34 @@ client.on('interactionCreate', async interaction => {
             }
         }
     } else if (commandName == 'record') {
-        // starts recording
-        const recordable = new Set()
+        // starts recording each member in voice channel
+
 
         const channel = interaction.member?.voice.channel;
         const connection = getVoiceConnection(channel.guild.id);
+        // const id = interaction.member.id;
 
+        const recordable = new Set()
         for (const [key, value] of channel.members.entries()) {
             recordable.add(key)
         }
 
         if (connection) {
-            // const userId = Snowflake(interaction.options.get('speaker').value)
-            // recordable.add(userId);
+            // const dispatcher = connection.playOpusPacket('./sound.opus');
 
             const receiver = connection.receiver;
             console.log(receiver)
             recordable.forEach(function (id) {
-                // console.log(id)
                 utils.createListeningStream(receiver, id, client.users.cache.get(id));
             })
+
+            // const audio = connection.receiver.createStream(interaction, { mode: 'pcm', end: 'manual' });
+            // audio.pipe(fs.createWriteStream('user_audio'));
 
             await interaction.reply({ ephemeral: false, content: 'Listening!' });
         } else {
             await interaction.reply({ ephemeral: false, content: 'Join a voice channel and then try that again!' });
         }
-
 
 
     } else if (commandName == 'leave') {
@@ -102,6 +105,7 @@ client.on('interactionCreate', async interaction => {
         const connection = getVoiceConnection(channel.guild.id);
         try {
             connection.destroy()
+            recordable.clear()
             await interaction.reply({ content: `Leaving ${channel}`, ephemeral: false });
         } catch (error) {
             await interaction.reply({ content: 'Not connected to channel.', ephemeral: false });
@@ -113,6 +117,10 @@ client.on('interactionCreate', async interaction => {
 client.once('ready', () => {
     console.log("Connected as " + client.user.tag)
 
+})
+
+client.on('error', () => {
+    console.log('error')
 })
 
 client.login(process.env.RECV_BOT_TOKEN)
