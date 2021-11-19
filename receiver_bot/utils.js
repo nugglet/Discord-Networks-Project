@@ -11,9 +11,10 @@ import {
     VoiceReceiver,
     generateDependencyReport
 } from '@discordjs/voice';
-import pkg from '@discordjs/opus';
-const { OpusEncoder } = pkg;
-import prism from 'prism-media';
+import { createWriteStream } from 'node:fs';
+import pkg from '@discordjs/opus'
+const { OpusEncoder } = pkg
+import prism, { opus } from 'prism-media';
 import { FileWriter } from 'wav';
 import { pipeline, Transform } from 'node:stream';
 
@@ -56,24 +57,45 @@ function getDisplayName(userId, user) {
 }
 
 export async function createListeningStream(receiver, userId, user) {
-    // console.log(receiver, userId, user)
-
-    const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
-    const encoder = new prism.opus.Encoder(16000, 1)
-    // const encoder = new OpusEncoder(16000, 1)
-
     const opusStream = receiver.subscribe(userId, {
-        end: {
-            behavior: EndBehaviorType.Manual
-        }
-    })
-        .pipe(new OpusDecodingStream({}, encoder))
-        .pipe(new FileWriter(filename, {
-            channels: 1,
-            sampleRate: 16000,
-            autoDestroy: true
-        }));
+		end: {
+			behavior: EndBehaviorType.AfterSilence,
+			duration: 100,
+		},
+        autoDestroy: true,
+	});
+
+    console.log(receiver)
+
+	const oggStream = new prism.opus.OggLogicalBitstream({
+		opusHead: new prism.opus.OpusHead({
+			channelCount: 2,
+			sampleRate: 48000,
+		}),
+		pageSizeControl: {
+			maxPackets: 10,
+		},
+	});
+
+	const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
+
+	const out = createWriteStream(filename, {autoClose: true});
 
     console.log(`👂 Started recording ${filename}`);
-    console.log(generateDependencyReport())
+
+    pipeline(opusStream, oggStream, out, (err) => {
+        console.log(err)
+		if (err) {
+			console.warn(`❌ Error recording file ${filename} - ${err.message}`);
+		} else {
+			console.log(`✅ Recorded ${filename}`);
+		}
+	})
+}
+
+export function reportCallStats(channel, interaction) {
+
+    var report = `Call Statistics:\nNumber of Members: ${channel.members.size}\nChannel Bitrate: ${channel.bitrate}\nRTC Region: ${channel.rtcRegion}`
+    return report
+
 }

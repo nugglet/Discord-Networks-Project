@@ -16,7 +16,9 @@ const token = process.env.RECV_BOT_TOKEN
 const commands = [
     new SlashCommandBuilder().setName('join').setDescription('Joins the active voice channel and starts recording.'),
     new SlashCommandBuilder().setName('record').setDescription('Records voice activity.'),
-    new SlashCommandBuilder().setName('leave').setDescription('Leaves channel and reports call stats')
+    new SlashCommandBuilder().setName('leave').setDescription('Leaves channel and reports call stats'),
+    new SlashCommandBuilder().setName('setbitrate').setDescription('Sets channel bitrate if user is connected to a voice channel.')
+        .addIntegerOption(option => option.setName('bitrate').setDescription('Enter new bitrate').setRequired(true))
 ]
     .map(command => command.toJSON());
 
