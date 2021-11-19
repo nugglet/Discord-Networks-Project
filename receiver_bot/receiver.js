@@ -102,3 +102,21 @@ client.on('error', () => {
 })
 
 client.login(process.env.RECV_BOT_TOKEN)
+
+
+// For Master-Slave Construct -> use master and slave instead of client
+// master.on('ready', () => {
+//    console.log("Connected Master Bot");
+//
+// })
+
+// slave.on('ready', () => {
+//    console.log("Connected Slave Bot");
+//
+// })
+
+// console.log("Start Master Bot");
+// master.login(MASTER_KEY);
+
+// console.log("Start Slave Bot");
+// slave.login(SLAVE_KEY);
