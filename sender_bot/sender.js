@@ -1,7 +1,11 @@
 import Discord, { Interaction, CommandInteraction, GuildMember } from 'discord.js';
-import { joinVoiceChannel, getVoiceConnection } from '@discordjs/voice';
-import dotenv from 'dotenv'
+import { joinVoiceChannel, getVoiceConnection, VoiceConnection,createAudioResource , createAudioPlayer} from '@discordjs/voice';
+import dotenv from 'dotenv';
+import { createReadStream } from 'node:fs';
+import { join } from 'path/posix';
 import * as utils from './utils.js'
+import ytdl from 'ytdl-core';
+import { createWriteStream } from 'node:fs'
 
 dotenv.config()
 
@@ -12,7 +16,6 @@ const guildId = process.env.GUILD_ID
 const token = process.env.SENDER_BOT_TOKEN
 const channelId = process.env.CHANNEL_ID
 
-var isReady = true;
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
@@ -46,10 +49,18 @@ client.on('interactionCreate', async interaction => {
         // const id = interaction.member.id;
         if (connection) {
            
-            connection.playOpusPacket('./audio.mp3',{volume: 0.9,});
-            
-		    console.log("Played sound");
+            let resource = createAudioResource(createReadStream('./audio.mp3'), {
+                inlineVolume : true
+            });
 
+            resource.volume.setVolume(0.2);
+
+            console.log(join('audio.mp3'));
+            
+            const player = createAudioPlayer();
+
+            connection.subscribe(player);
+            player.play(resource)
 
             await interaction.reply({ ephemeral: false, content: 'Playing!' });
         } else {
