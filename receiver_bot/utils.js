@@ -11,7 +11,9 @@ import {
     VoiceReceiver
 } from '@discordjs/voice';
 import { createWriteStream } from 'node:fs';
-import prism from 'prism-media';
+import pkg from '@discordjs/opus'
+const { OpusEncoder } = pkg
+import prism, { opus } from 'prism-media';
 import { FileWriter } from 'wav';
 import { pipeline, Transform } from 'node:stream';
 
@@ -54,24 +56,38 @@ function getDisplayName(userId, user) {
 }
 
 export async function createListeningStream(receiver, userId, user) {
-    // console.log(receiver, userId, user)
-
-    const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
-    const encoder = new prism.opus.Encoder(16000, 1)
-
-    console.log('entering function')
     const opusStream = receiver.subscribe(userId, {
-        end: {
-            duration: 1000,
-        }
-    })
-        .pipe(new OpusDecodingStream({}, encoder))
-        .pipe(new FileWriter(filename, {
-            channels: 1,
-            sampleRate: 16000
-        }));
+		end: {
+			behavior: EndBehaviorType.AfterSilence,
+			duration: 100,
+		},
+        autoDestroy: true,
+	});
 
-    console.log('subbed')
+    console.log(receiver)
+
+	const oggStream = new prism.opus.OggLogicalBitstream({
+		opusHead: new prism.opus.OpusHead({
+			channelCount: 2,
+			sampleRate: 48000,
+		}),
+		pageSizeControl: {
+			maxPackets: 10,
+		},
+	});
+
+	const filename = `./recordings/${Date.now()}-${getDisplayName(userId, user)}.ogg`;
+
+	const out = createWriteStream(filename, {autoClose: true});
 
     console.log(`👂 Started recording ${filename}`);
+
+    pipeline(opusStream, oggStream, out, (err) => {
+        console.log(err)
+		if (err) {
+			console.warn(`❌ Error recording file ${filename} - ${err.message}`);
+		} else {
+			console.log(`✅ Recorded ${filename}`);
+		}
+	})
 }

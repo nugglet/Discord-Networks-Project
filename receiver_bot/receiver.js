@@ -1,12 +1,14 @@
-import Discord, { Interaction, CommandInteraction, GuildMember } from 'discord.js';
-import pkg from 'discord.js';
-const { Snowflake } = pkg
-import { joinVoiceChannel, getVoiceConnection } from '@discordjs/voice';
+import Discord, { Interaction, CommandInteraction, GuildMember} from 'discord.js';
+import { joinVoiceChannel, getVoiceConnection, EndBehaviorType } from '@discordjs/voice';
 import dotenv from 'dotenv'
 import * as utils from './utils.js'
+import pkg from '@discordjs/opus'
+const { OpusEncoder } = pkg
+import { pipeline, Transform } from 'node:stream';
+import { FileWriter } from 'wav';
 
 dotenv.config()
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_VOICE_STATES] });
 
 // ============== GLOBAL VARIABLES ==============
 
@@ -17,6 +19,28 @@ const channelId = process.env.CHANNEL_ID
 
 // ===============================================
 
+class OpusDecodingStream extends Transform {
+    encoder
+
+    constructor(options, encoder) {
+        super(options)
+        this.encoder = encoder
+    }
+
+    _transform(data, encoding, callback) {
+        this.push(this.encoder.decode(data))
+        callback()
+    }
+}
+
+function findUsername(userId){
+    const User = client.users.cache.get(userId);
+    if (User) { // Checking if the user exists.
+       return User.tag;
+    } else {
+        message.channel.send("User not found.") // The user doesn't exists or the bot couldn't find him.
+    };
+}
 // ============== DEFINE COMMAND BEHAVIOUR ==================================
 
 client.on('interactionCreate', async interaction => {
@@ -59,7 +83,7 @@ client.on('interactionCreate', async interaction => {
             // recordable.add(userId);
 
             const receiver = connection.receiver;
-
+            console.log(receiver)
             recordable.forEach(function (id) {
                 // console.log(id)
                 utils.createListeningStream(receiver, id, client.users.cache.get(id));
