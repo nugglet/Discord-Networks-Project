@@ -17,13 +17,7 @@ const token = process.env.RECV_BOT_TOKEN
 const channelId = process.env.CHANNEL_ID
 
 // ===============================================
-<<<<<<< HEAD
 // const master = new Discord.Client(); => define master bot, might need to replace the client with master, and/or slave appropriately
-=======
-// const MASTER_KEY = "<insert bot token>";
-// const SLAVE_KEY = "<insert bot token>"; 
-// const master = new Discord.Client(); => define master bot, might need to replace client with master, and/or slave appropriately
->>>>>>> 1bbba66a2c881a583a1ca42187a405577cc171af
 // const slave = new Discord.Client(); => define slave bot
 
 // ============== DEFINE COMMAND BEHAVIOUR ==================================
@@ -112,10 +106,6 @@ client.on('error', () => {
 
 client.login(process.env.RECV_BOT_TOKEN)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 1bbba66a2c881a583a1ca42187a405577cc171af
 // For Master-Slave Construct -> use master and slave instead of client
 // master.on('ready', () => {
 //    console.log("Connected Master Bot");
@@ -131,8 +121,4 @@ client.login(process.env.RECV_BOT_TOKEN)
 // master.login(MASTER_KEY);
 
 // console.log("Start Slave Bot");
-<<<<<<< HEAD
 // slave.login(SLAVE_KEY);
-=======
-// slave.login(SLAVE_KEY);
->>>>>>> 1bbba66a2c881a583a1ca42187a405577cc171af
