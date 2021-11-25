@@ -32,7 +32,7 @@ Medium Audio:
 		Packet Loss: 0.15654351909830932%
 		Average Latency: 0.004730265005212977s
 		Jitter: 0.0024499165518221022s
-Medium Audio:
+Short Audio:
 	16K, 8K Channel:
 		Packet Loss: 0.0%
 		Average Latency: 0.03127085794102077s
