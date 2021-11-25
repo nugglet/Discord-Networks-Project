@@ -1,0 +1,53 @@
+Long Audio:
+	16K, 8K Channel:
+		Packet Loss: 0.15463917525773196%
+		Average Latency: 0.0636041263864535s
+		Jitter: 0.002619685181282529s
+	16K, 64K Channel:
+		Packet Loss: 0.051539750032212346%
+		Average Latency: 0.008187350012122048s
+		Jitter: 0.0026681652814226704s
+	128K, 8K Channel:
+		Packet Loss: 0.12884937508053088%
+		Average Latency: 0.028128457364074044s
+		Jitter: 0.00247935119751961s
+	128K, 64K Channel:
+		Packet Loss: 0.03865979381443299%
+		Average Latency: 0.004234555338989163s
+		Jitter: 0.0025822583272814936s
+Medium Audio:
+	16K, 8K Channel:
+		Packet Loss: 0.03132832080200501%
+		Average Latency: 0.030923416462858185s
+		Jitter: 0.0021095938069693346s
+	16K, 64K Channel:
+		Packet Loss: 0.28177833437695676%
+		Average Latency: 0.010696463891811805s
+		Jitter: 0.002688399211845206s
+	128K, 8K Channel:
+		Packet Loss: 0.06261740763932373%
+		Average Latency: 0.030424728650496082s
+		Jitter: 0.002867846308140051s
+	128K, 64K Channel:
+		Packet Loss: 0.15654351909830932%
+		Average Latency: 0.004730265005212977s
+		Jitter: 0.0024499165518221022s
+Medium Audio:
+	16K, 8K Channel:
+		Packet Loss: 0.0%
+		Average Latency: 0.03127085794102077s
+		Jitter: 0.0017963226944004485s
+	16K, 64K Channel:
+		Packet Loss: 0.22727272727272727%
+		Average Latency: 0.01020805945428996s
+		Jitter: 0.002418848477542128s
+	128K, 8K Channel:
+		Packet Loss: 0.22675736961451248%
+		Average Latency: 0.02968117063695748s
+		Jitter: 0.002664223890369737s
+	128K, 64K Channel:
+		Packet Loss: 0.22675736961451248%
+		Average Latency: 0.0053603270920839505s
+		Jitter: 0.0022860138182759556s
+	
+	
