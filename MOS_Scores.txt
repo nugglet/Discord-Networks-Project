@@ -1,17 +1,17 @@
 Long Audio MOS Scores
-16K bitrate 8K Channel: 4.40412537584138
-16K bitrate 64K Channel: 4.404228833789073
-128K bitrate 8K Channel: 4.404180194176554
-128K bitrate 64K Channel: 4.404243365891713
+16K bitrate 8K Channel: 4.13956436621962
+16K bitrate 64K Channel: 4.225141688517693
+128K bitrate 8K Channel: 4.208879099130061
+128K bitrate 64K Channel: 4.237614477035971
 ==============================================
 Medium Audio MOS Scores
-16K bitrate 8K Channel: 4.404243969493178
-16K bitrate 64K Channel: 4.404111420995557
-128K bitrate 8K Channel: 4.404191470503185
-128K bitrate 64K Channel: 4.404191102281336
+16K bitrate 8K Channel: 4.233030217799609
+16K bitrate 64K Channel: 4.219573726350185
+128K bitrate 8K Channel: 4.174245248448771
+128K bitrate 64K Channel: 4.246624931683244
 ==============================================
 Short Audio MOS Scores
-16K bitrate 8K Channel: 4.404274617673206
-16K bitrate 64K Channel: 4.404152219975642
-128K bitrate 8K Channel: 4.404121057039598
-128K bitrate 64K Channel: 4.404163846195218
+16K bitrate 8K Channel: 4.255732370305834
+16K bitrate 64K Channel: 4.240754104449059
+128K bitrate 8K Channel: 4.191754282986666
+128K bitrate 64K Channel: 4.257637736920943
