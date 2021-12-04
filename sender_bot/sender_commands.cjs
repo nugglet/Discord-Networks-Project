@@ -15,12 +15,10 @@ const token = process.env.SENDER_BOT_TOKEN
 
 const commands = [
     new SlashCommandBuilder().setName('join').setDescription('Joins the active voice channel and starts playing.'),
-    new SlashCommandBuilder().setName('play').setDescription('Play music'),
+    new SlashCommandBuilder().setName('play').setDescription('Play music').addStringOption(option => option.setName('name').setDescription('Enter new filename').setRequired(true)).addIntegerOption(option => option.setName('bitrate').setDescription('Enter new bitrate').setRequired(true)),
     new SlashCommandBuilder().setName('leave').setDescription('Leaves channel')
 ]
     .map(command => command.toJSON());
-
-const ytdl = require('ytdl-core')
 
 const rest = new REST({ version: '9' }).setToken(token);
 

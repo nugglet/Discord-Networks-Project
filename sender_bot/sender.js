@@ -2,10 +2,7 @@ import Discord, { Interaction, CommandInteraction, GuildMember } from 'discord.j
 import { joinVoiceChannel, getVoiceConnection, VoiceConnection,createAudioResource , createAudioPlayer} from '@discordjs/voice';
 import dotenv from 'dotenv';
 import { createReadStream } from 'node:fs';
-import { join } from 'path/posix';
-import * as utils from './utils.js'
-import ytdl from 'ytdl-core';
-import { createWriteStream } from 'node:fs'
+
 
 dotenv.config()
 
@@ -42,24 +39,23 @@ client.on('interactionCreate', async interaction => {
             }
         }
     } else if (commandName == 'play') {
-        // starts recording each member in voice channel
+        // starts playing audio in voice channel
+
+        var bitrate =  interaction.options.getInteger("bitrate");
+        var filename =  interaction.options.getString("name");
 
         const channel = interaction.member?.voice.channel;
         const connection = getVoiceConnection(channel.guild.id);
         // const id = interaction.member.id;
         if (connection) {
-
-            let resource = createAudioResource(createReadStream('./audio.mp3'), {
+            let resource = createAudioResource(createReadStream('./src/' + filename + '.ogg'), {
                 inlineVolume : true
             });
+            resource.volume.setVolume(0.1);
+            resource.encoder.setBitrate(bitrate);
 
-            resource.volume.setVolume(0.001);
-            resource.encoder.setBitrate(510000);
-            
             connection.subscribe(player);
             player.play(resource);
-            
-            start_logging()
 
             await interaction.reply({ ephemeral: false, content: 'Playing!' });
         } else {
@@ -84,7 +80,6 @@ client.on('interactionCreate', async interaction => {
 
 client.once('ready', () => {
     console.log("Connected as " + client.user.tag)
-
 })
 
 function sleep(ms) {
@@ -93,16 +88,13 @@ function sleep(ms) {
 
 async function start_logging() {
     while (true){
-        if (player.state.status=='playing')
-            console.log(player.state);
-            await sleep(1000)
+        console.log(player.state);
+        await sleep(1000)
     }
  }
-  
 
 client.on('error', () => {
     console.log('error')
 })
-
 
 client.login(process.env.SENDER_BOT_TOKEN);
